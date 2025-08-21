@@ -227,7 +227,6 @@ void draw3()
 
     Ellipsoid s1(Vector3(0.f, 0.f, -3.f), 0.5f);
     Ellipsoid s2(Vector3(0.f, -50.f, 0.f), 50.f);
-    //s1.SetScale(Vector3(1.f, 1.f, 1.f));
 
     float invWidth = 1.f / (float)WIDTH;
     float invHeight = 1.f / (float)HEIGHT;
