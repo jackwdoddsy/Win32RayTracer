@@ -1,6 +1,7 @@
 #define NOMINMAX
 #include <windows.h>
 #include <iostream>
+#include <time.h>
 #include "Camera.h"
 #include "Matrix3.h"
 #include "Matrix4.h"
@@ -10,9 +11,10 @@
 #include "Primitive.h"
 #include "Ellipsoid.h"
 #include "DirectionalLight.h"
+#include "Random.h"
 
-const int WIDTH = 1920;//640,960,1024,1280,1366,1600,1920,2560,3200,3840,5120,7680
-const int HEIGHT = 1080;//360,540,576, 720, 760, 900, 1080,1440,1800,2160,2880,4320
+const int WIDTH = 1280;//640,960,1024,1280,1366,1600,1920,2560,3200,3840,5120,7680
+const int HEIGHT = 720;//360,540,576, 720, 760, 900, 1080,1440,1800,2160,2880,4320
 unsigned char buffer[WIDTH * HEIGHT * 4]; // BGRA format
 
 void draw(int t);
@@ -231,33 +233,42 @@ void draw3()
     float invWidth = 1.f / (float)WIDTH;
     float invHeight = 1.f / (float)HEIGHT;
 
+    Random::SetSeed(time(nullptr));
+    int raysPerPixel = 50;
+
     for (int y = 0; y < HEIGHT; ++y)
     {
         float screenSpaceY = 1.f - 2.f * ((float)y + 0.5f) * invHeight;
 
         for (int x = 0; x < WIDTH; ++x)
         {
-            float screenSpaceX = 2.f * ((float)x + 0.5f) * invWidth - 1.f;
-            Vector2 screenSpacePos = Vector2(screenSpaceX, screenSpaceY);
-            Ray viewRay = mainCamera.CastRay(screenSpacePos);
+            ColourRGB rayColour(0.f, 0.f, 0.f);
+            for (int p = 0; p < raysPerPixel; ++p)
+            {
+                float screenSpaceY = 1.f - 2.f * ((float)y + Random::RandFloat()) * invHeight;
+                float screenSpaceX = 2.f * ((float)x + Random::RandFloat()) * invWidth - 1.f;
 
-            ColourRGB rayColour;
-            Vector3 hitPos = Vector3(0.f, 0.f, 0.f);
-            Vector3 surfNormal = Vector3(0.f, 0.f, 0.f);
-            if (s1.IntersectTest(viewRay, hitPos, surfNormal))
-            {
-                rayColour = dl.CalculateLighting(hitPos, mainCamera.GetPosition(), surfNormal);
-            }
-            else if (s2.IntersectTest(viewRay, hitPos, surfNormal))
-            {
-                rayColour = (surfNormal + 1.f) * 0.5f;
-            }
-            else
-            {
-                rayColour = RayToColour(viewRay);
-                rayColour = Lerp(Vector3(1.f, 1.f, 1.f), Vector3(0.4f, 0.7f, 1.f), rayColour.y);
-            }
+                Vector2 screenSpacePos = Vector2(screenSpaceX, screenSpaceY);
+                Ray viewRay = mainCamera.CastRay(screenSpacePos);
 
+                Vector3 hitPos = Vector3(0.f, 0.f, 0.f);
+                Vector3 surfNormal = Vector3(0.f, 0.f, 0.f);
+
+                if (s1.IntersectTest(viewRay, hitPos, surfNormal))
+                {
+                    rayColour = rayColour + dl.CalculateLighting(hitPos, mainCamera.GetPosition(), surfNormal);
+                }
+                else if (s2.IntersectTest(viewRay, hitPos, surfNormal))
+                {
+                    rayColour = rayColour + (surfNormal + 1.f) * 0.5f;
+                }
+                else
+                {
+                    Vector3 rayToColour = RayToColour(viewRay);
+                    rayColour = rayColour + Lerp(Vector3(1.f, 1.f, 1.f), Vector3(0.4f, 0.7f, 1.f), rayToColour.y);
+                }
+            }
+            rayColour = rayColour * (1.f / (float)raysPerPixel);
             write_colour(rayColour, x, y);
         }
     }
