@@ -239,7 +239,7 @@ void draw3()
     for (int y = 0; y < HEIGHT; ++y)
     {
         float screenSpaceY = 1.f - 2.f * ((float)y + 0.5f) * invHeight;
-
+        std::cout << "Rendering screenline: " << y << std::endl;
         for (int x = 0; x < WIDTH; ++x)
         {
             ColourRGB rayColour(0.f, 0.f, 0.f);
