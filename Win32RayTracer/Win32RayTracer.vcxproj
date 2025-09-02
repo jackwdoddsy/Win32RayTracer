@@ -142,12 +142,14 @@
     <ClInclude Include="Headers\Camera.h" />
     <ClInclude Include="Headers\DirectionalLight.h" />
     <ClInclude Include="Headers\Ellipsoid.h" />
+    <ClInclude Include="Headers\IntersectionResponse.h" />
     <ClInclude Include="Headers\Light.h" />
     <ClInclude Include="Headers\Matrix3.h" />
     <ClInclude Include="Headers\Matrix4.h" />
     <ClInclude Include="Headers\Primitive.h" />
     <ClInclude Include="Headers\Random.h" />
     <ClInclude Include="Headers\Ray.h" />
+    <ClInclude Include="Headers\Scene.h" />
     <ClInclude Include="Headers\Vector2.h" />
     <ClInclude Include="Headers\Vector3.h" />
     <ClInclude Include="Headers\Vector4.h" />
