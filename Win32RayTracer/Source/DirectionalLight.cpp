@@ -62,7 +62,7 @@ Vector3 DirectionalLight::CalculateLighting(const IntersectResponse& a_ir, const
     reflectionVec.Normalize();
 
     // Specular term (Phong)
-    float specularFactor = std::powf(Max(0.f, Dot(reflectionVec, eyeDir)), 64.f);
+    float specularFactor = std::powf(Max(0.f, Dot(reflectionVec, lightDir)), 64.f);
     Vector3 specular = m_colourRGB * 0.9f * specularFactor;
 
     return ambient + diffuse + specular;
