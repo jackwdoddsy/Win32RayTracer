@@ -17,7 +17,7 @@ Ellipsoid::~Ellipsoid()
 
 }
 
-bool Ellipsoid::IntersectTest(const Ray& a_ray, Vector3& a_hitPos, Vector3& a_surfNormal) const
+bool Ellipsoid::IntersectTest(const Ray& a_ray, IntersectResponse& a_ir) const
 {
     const float EPSILON = 1e-6f; // tweak depending on your scene scale
 
@@ -57,12 +57,14 @@ bool Ellipsoid::IntersectTest(const Ray& a_ray, Vector3& a_hitPos, Vector3& a_su
 
     // Transform hit point back to world space
     Vector4 hpWorld = m_Transform * hpObj;
-    a_hitPos = Vector3(hpWorld.x, hpWorld.y, hpWorld.z);
+    a_ir.hitPos = Vector3(hpWorld.x, hpWorld.y, hpWorld.z);
 
     // Transform normal back to world space
     Vector4 n4 = normalMatrix * Vector4(nObj.x, nObj.y, nObj.z, 0.f);
-    a_surfNormal = Vector3(n4.x, n4.y, n4.z);
-    a_surfNormal.Normalize();
+    a_ir.surfaceNormal = Vector3(n4.x, n4.y, n4.z);
+    a_ir.surfaceNormal.Normalize();
+    a_ir.distance = (a_ray.Origin() - Vector3(hpWorld.x, hpWorld.y, hpWorld.z)).Length();
+    a_ir.colour = m_colour;
 
     return true;
 }

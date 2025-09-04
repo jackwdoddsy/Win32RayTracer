@@ -2,13 +2,14 @@
 #include "Vector3.h"
 #include "Matrix4.h"
 #include "Ray.h"
+#include "IntersectionResponse.h"
 
 class Primitive
 {
 public:
 	Primitive();
 	virtual ~Primitive();
-	virtual bool IntersectTest(const Ray& a_ray, Vector3& a_hitPos, Vector3& a_surfNormal) const = 0;
+	virtual bool IntersectTest(const Ray& a_ray, IntersectResponse& a_ir) const = 0;
 	Matrix4 GetTransform() const;
 	void SetTransform(const Matrix4& a_m4);
 	Vector3 GetPosition() const;

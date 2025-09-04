@@ -40,7 +40,7 @@ Vector3 Reflect(const Vector3& a_v3A, const Vector3& a_v3B)
 	return reflect;
 }
 
-Vector3 DirectionalLight::CalculateLighting(const Vector3& a_hitPos, const Vector3& a_eyePos, const Vector3& a_normal) const
+Vector3 DirectionalLight::CalculateLighting(const IntersectResponse& a_ir, const Vector3& a_eyePos) const
 {
     // Ambient term
     Vector3 ambient = m_colourRGB * 0.1f;
@@ -50,15 +50,15 @@ Vector3 DirectionalLight::CalculateLighting(const Vector3& a_hitPos, const Vecto
     lightDir.Normalize();
 
     // Diffuse term
-    float lightDiffuse = Max(0.f, Dot(lightDir, a_normal));
-    Vector3 diffuse = m_colourRGB * 0.9f * lightDiffuse;
+    float lightDiffuse = Max(0.f, Dot(lightDir, a_ir.surfaceNormal));
+    Vector3 diffuse = a_ir.colour * 0.9f * lightDiffuse;
 
     // View direction
-    Vector3 eyeDir = a_eyePos - a_hitPos;
+    Vector3 eyeDir = a_eyePos - a_ir.hitPos;
     eyeDir.Normalize();
 
     // Reflection of light direction around the normal
-    Vector3 reflectionVec = Reflect(-lightDir, a_normal);
+    Vector3 reflectionVec = Reflect(-lightDir, a_ir.surfaceNormal);
     reflectionVec.Normalize();
 
     // Specular term (Phong)

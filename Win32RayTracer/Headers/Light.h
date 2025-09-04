@@ -1,5 +1,6 @@
 #include "Matrix4.h"
 #include "Vector3.h"
+#include "IntersectionResponse.h"
 
 class Light
 {
@@ -7,7 +8,7 @@ public:
 	Light();
 	Light(const Matrix4& a_transform, const Vector3& a_colour);
 	virtual ~Light();
-	virtual Vector3 CalculateLighting(const Vector3& a_hitPoint, const Vector3& a_eyePos, const Vector3& a_normal) const = 0;
+	virtual Vector3 CalculateLighting(const IntersectResponse& a_ir, const Vector3& a_eyePos) const = 0;
 	Matrix4 GetTransform() const;
 	void SetTransform(const Matrix4& a_m4);
 	Vector3 GetPosition() const;

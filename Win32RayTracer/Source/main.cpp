@@ -12,6 +12,8 @@
 #include "Ellipsoid.h"
 #include "DirectionalLight.h"
 #include "Random.h"
+#include "Scene.h"
+#include "IntersectionResponse.h"
 
 const int WIDTH = 1280;//640,960,1024,1280,1366,1600,1920,2560,3200,3840,5120,7680
 const int HEIGHT = 720;//360,540,576, 720, 760, 900, 1080,1440,1800,2160,2880,4320
@@ -220,15 +222,25 @@ void draw2()
 
 void draw3()
 {
+    Scene mainScene;
+
     Camera mainCamera;
     mainCamera.SetPerspective(60.f, (float)WIDTH / (float)HEIGHT, 1.f, 1000.f);
     mainCamera.SetPosition(Vector3(0.f, 0.f, 0.f));
     mainCamera.LookAt(Vector3(0.f, 0.f, 0.f), Vector3(0.f, 1.f, 0.f));
 
-    DirectionalLight dl = DirectionalLight(Matrix4(), Vector3(0.5f, 0.f, 0.5f), Vector3(0.f, -20.f, -0.707f));
+    DirectionalLight dl = DirectionalLight(Matrix4(), Vector3(0.5f, 0.f, 0.5f), Vector3(0.5773f, -0.5773f, -0.707f));
 
     Ellipsoid s1(Vector3(0.f, 0.f, -3.f), 0.5f);
+    s1.m_colour = Vector3(0.5f, 0.f, 0.5f);
     Ellipsoid s2(Vector3(0.f, -50.f, 0.f), 50.f);
+    s2.m_colour = Vector3(0.f, 0.5f, 0.f);
+    Ellipsoid s3(Vector3(3.f, 0.f, -3.f), 0.5f);
+    s3.m_colour = Vector3(0.f, 0.f, 0.5f);
+
+    mainScene.AddObject(&s1);
+    mainScene.AddObject(&s2);
+    mainScene.AddObject(&s3);
 
     float invWidth = 1.f / (float)WIDTH;
     float invHeight = 1.f / (float)HEIGHT;
@@ -254,13 +266,11 @@ void draw3()
                 Vector3 hitPos = Vector3(0.f, 0.f, 0.f);
                 Vector3 surfNormal = Vector3(0.f, 0.f, 0.f);
 
-                if (s1.IntersectTest(viewRay, hitPos, surfNormal))
+                IntersectResponse ir;
+
+                if (mainScene.IntersectTest(viewRay, ir))
                 {
-                    rayColour = rayColour + dl.CalculateLighting(hitPos, mainCamera.GetPosition(), surfNormal);
-                }
-                else if (s2.IntersectTest(viewRay, hitPos, surfNormal))
-                {
-                    rayColour = rayColour + (surfNormal + 1.f) * 0.5f;
+                    rayColour = rayColour + dl.CalculateLighting(ir, mainCamera.GetPosition());
                 }
                 else
                 {
