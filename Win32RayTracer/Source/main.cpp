@@ -233,7 +233,7 @@ void draw3()
 
     Ellipsoid s1(Vector3(0.f, 0.f, -3.f), 0.5f);
     s1.m_colour = Vector3(0.5f, 0.f, 0.5f);
-    Ellipsoid s2(Vector3(0.f, -50.f, 0.f), 50.f);
+    Ellipsoid s2(Vector3(0.f, -100.5f, -3.f), 100.f);
     s2.m_colour = Vector3(0.f, 0.5f, 0.f);
     Ellipsoid s3(Vector3(3.f, 0.f, -3.f), 0.5f);
     s3.m_colour = Vector3(0.f, 0.f, 0.5f);
