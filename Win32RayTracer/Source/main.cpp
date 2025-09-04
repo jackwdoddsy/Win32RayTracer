@@ -59,7 +59,7 @@ int WINAPI main(HINSTANCE hInstance, HINSTANCE, LPSTR, int nCmdShow) {
     bmi.bmiHeader.biBitCount = 32;
     bmi.bmiHeader.biCompression = BI_RGB;
 
-    draw3();
+    draw2();
 
     MSG msg = { };
     int i = 0;
@@ -180,13 +180,28 @@ void draw(int t)
 
 void draw2()
 {
+    Scene mainScene;
+
     Camera mainCamera;
     mainCamera.SetPerspective(60.f, (float)WIDTH / (float)HEIGHT, 1.f, 1000.f);
-    mainCamera.SetPosition(Vector3(0.f, 0.f, 1.f));
+    mainCamera.SetPosition(Vector3(0.f, 0.f, 0.f));
     mainCamera.LookAt(Vector3(0.f, 0.f, 0.f), Vector3(0.f, 1.f, 0.f));
 
-    Vector3 spherePos = Vector3(0.f, 0.f, 0.f);
-    float sphereRadius = 0.5f;
+    DirectionalLight dl = DirectionalLight(Matrix4(), Vector3(0.5f, 0.f, 0.5f), Vector3(0.5773f, -0.5773f, -0.707f));
+
+    Ellipsoid s1(Vector3(0.f, 0.f, -3.f), 0.5f);
+    s1.m_colour = Vector3(0.5f, 0.f, 0.5f);
+    Ellipsoid s2(Vector3(0.f, -100.5f, -3.f), 100.f);
+    s2.m_colour = Vector3(0.f, 0.5f, 0.f);
+    Ellipsoid s3(Vector3(3.f, 0.f, -3.f), 0.5f);
+    s3.m_colour = Vector3(0.f, 0.f, 0.5f);
+    Ellipsoid s4(Vector3(-3.f, 0.f, -3.f), 0.5f);
+    s4.m_colour = Vector3(0.f, 0.f, 0.5f);
+
+    mainScene.AddObject(&s1);
+    mainScene.AddObject(&s2);
+    mainScene.AddObject(&s3);
+    mainScene.AddObject(&s4);
 
     float invWidth = 1.f / (float)WIDTH;
     float invHeight = 1.f / (float)HEIGHT;
@@ -194,32 +209,34 @@ void draw2()
     for (int y = 0; y < HEIGHT; ++y)
     {
         float screenSpaceY = 1.f - 2.f * ((float)y + 0.5f) * invHeight;
-
+        std::cout << "Rendering screenline: " << y << std::endl;
         for (int x = 0; x < WIDTH; ++x)
         {
-            float screenSpaceX = 2.f * ((float)x + 0.5f) * invWidth - 1.f;
+            ColourRGB rayColour(0.f, 0.f, 0.f);
+            float screenSpaceY = 1.f - 2.f * ((float)y + Random::RandFloat()) * invHeight;
+            float screenSpaceX = 2.f * ((float)x + Random::RandFloat()) * invWidth - 1.f;
+
             Vector2 screenSpacePos = Vector2(screenSpaceX, screenSpaceY);
             Ray viewRay = mainCamera.CastRay(screenSpacePos);
 
-            ColourRGB rayColour;
-            float intersectDistance = viewRay.IntersectSphere(spherePos, sphereRadius);
-            if (intersectDistance > 0.f)
+            Vector3 hitPos = Vector3(0.f, 0.f, 0.f);
+            Vector3 surfNormal = Vector3(0.f, 0.f, 0.f);
+
+            IntersectResponse ir;
+
+            if (mainScene.IntersectTest(viewRay, ir))
             {
-                Vector3 surfaceNormal = viewRay.PointAt(intersectDistance) - spherePos;
-                surfaceNormal.Normalize();
-                rayColour = (surfaceNormal + 1.f) * 0.5f;
+                rayColour = dl.CalculateLighting(ir, mainCamera.GetPosition());
             }
             else
             {
-                rayColour = RayToColour(viewRay);
-                rayColour = Lerp(Vector3(1.f, 1.f, 1.f), Vector3(0.4f, 0.7f, 1.f), rayColour.y);
+                Vector3 rayToColour = RayToColour(viewRay);
+                rayColour = rayColour + Lerp(Vector3(1.f, 1.f, 1.f), Vector3(0.4f, 0.7f, 1.f), rayToColour.y);
             }
-
             write_colour(rayColour, x, y);
         }
     }
 }
-
 void draw3()
 {
     Scene mainScene;
@@ -237,10 +254,13 @@ void draw3()
     s2.m_colour = Vector3(0.f, 0.5f, 0.f);
     Ellipsoid s3(Vector3(3.f, 0.f, -3.f), 0.5f);
     s3.m_colour = Vector3(0.f, 0.f, 0.5f);
+    Ellipsoid s4(Vector3(-3.f, 0.f, -3.f), 0.5f);
+    s4.m_colour = Vector3(0.f, 0.f, 0.5f);
 
     mainScene.AddObject(&s1);
     mainScene.AddObject(&s2);
     mainScene.AddObject(&s3);
+    mainScene.AddObject(&s4);
 
     float invWidth = 1.f / (float)WIDTH;
     float invHeight = 1.f / (float)HEIGHT;

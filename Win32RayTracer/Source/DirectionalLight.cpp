@@ -54,7 +54,7 @@ Vector3 DirectionalLight::CalculateLighting(const IntersectResponse& a_ir, const
     Vector3 diffuse = a_ir.colour * 0.9f * lightDiffuse;
 
     // View direction
-    Vector3 eyeDir = a_eyePos - a_ir.hitPos;
+    Vector3 eyeDir = a_ir.hitPos - a_eyePos;
     eyeDir.Normalize();
 
     // Reflection of light direction around the normal
